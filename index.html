@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SKETCH - museum</title>
+<style>
+#canvas {
+	display: block;
+	max-width: 1000px;
+	width: 100%;
+	margin: 10px auto;
+}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script>
+const W = 3000; //キャンバスの幅
+const H = 1000; //キャンバスの高さ
+const w = 800; //画像の幅
+const h = 800; //画像の高さ
+const N = 3; //画像の個数
+const Lg = 0.3; //照明ぽい影の強さ、0にすると明るくフラット
+const bg = '#327892'; //背景色
+const ext = 'png'; //拡張子　'png'とか'jpg'とか
+
+const canvasApp = () => {
+    
+    const cvs = document.querySelector('#canvas');
+    const ctx = cvs.getContext('2d');
+    const p = (W - w * N) / (N + 1);
+    cvs.width = W;
+    cvs.height = H;
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    for (var i = 0; i < N; i++) {
+
+        const r = Math.min(parts[i].width / w, parts[i].height / h);
+        const sw = w * r;
+        const sh = h * r;
+        const sx = (parts[i].width - sw) * 0.5;
+        const sy = (parts[i].height - sh) * 0.5;
+        const dx = (i + 1) * p + i * w;
+        const dy = (H - h - 70) * 0.5;
+
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 40;
+        ctx.shadowOffsetX = 20;
+        ctx.shadowOffsetY = 20;
+
+        ctx.fillStyle = '#efefef';
+        ctx.fillRect(dx + 2, dy + 2, w, h);
+        ctx.drawImage(parts[i], sx, sy, sw, sh, dx, dy, w, h);
+
+        ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+        ctx.fillRect(dx + 20, dy + h + 30, 90, 40);
+    }
+
+    const g = ctx.createRadialGradient(W / 2, H / 2, H * 0.2, W / 2, H / 2, W * 0.5);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(1, 'rgba(0,0,0,' + Lg + ')');
+
+    ctx.fillStyle = g;
+    ctx.rect(0, 0, W, H);
+    ctx.fill();
+}
+
+const init = () => {
+    l++;
+    if (l === n) {
+        canvasApp();
+    }
+}
+
+const n = N;
+const parts = [];
+let l = 0;
+for (let i = 0; i < n; i++) {
+    const part = new Image();
+    part.onload = init;
+    part.src = 'img/' + i + '.' + ext;
+    parts.push(part);
+}
+</script>
+</html>
